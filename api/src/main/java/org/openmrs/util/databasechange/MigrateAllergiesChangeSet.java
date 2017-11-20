@@ -157,11 +157,20 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	private Integer getConceptByGlobalProperty(Database database, String globalPropertyName) throws Exception {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '" + globalPropertyName + "'");
+		//ResultSet rs = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '" + globalPropertyName + "'");
+
+		PreparedStatement query = connection.prepareStatement("SELECT property_value FROM global_property WHERE property = ?");
+		query.setString(1, globalPropertyName);
+		ResultSet rs = query.executeQuery();
+
 		if (rs.next()) {
 			String uuid = rs.getString("property_value");
 			
-			rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE uuid = '" + uuid + "'");
+			//rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE uuid = '" + uuid + "'");
+			PreparedStatement queryUid = connection.prepareStatement("SELECT concept_id FROM concept WHERE uuid = ?");
+			queryUID.setString(1, uuid);
+			rs = queryUID.executeQuery();
+
 			if (rs.next()) {
 				return rs.getInt("concept_id");
 			}
